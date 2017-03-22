@@ -14,13 +14,20 @@ double length(Cordinate cordinate_1, Cordinate cordinate_2){
   return result;
 }
 
+double line_orientation(const Cordinate P, const Cordinate Q, const Cordinate R){
+    return (P.x * Q.y + P.y * R.x + Q.x * R.y) - (R.x * Q.y + R.y * P.x + Q.x * P.y);
+}
 
 int is_convex(Quadrilateral quadrilateral){
-  Cordinate vertices[5];
+  Cordinate  *vertices = malloc (4 * sizeof (Cordinate));
+  vertices = quadrilateral.vertice;
+  vertices = realloc (vertices, 5 * sizeof (Cordinate));
+  vertices[4] = vertices[1];
+
   int result = 0;
   int orientation = 0, i = 0;
   for (i = 0; i < n; ++i){
-    int d = D(quadrilateral.vertice[i], quadrilateral.vertice[i + 1], quadrilateral.vertice[i + 2]);
+    int d = line_orientation(quadrilateral.vertice[i], quadrilateral.vertice[i + 1], quadrilateral.vertice[i + 2]);
     if (d == 0)
       continue;
 
@@ -29,9 +36,9 @@ int is_convex(Quadrilateral quadrilateral){
   }
 
   for (i = 0; i < n; ++i) {
-    int d = D(quadrilateral.vertice[i], quadrilateral.vertice[i + 1], quadrilateral.vertice[i + 2]);
+    int d = line_orientation(quadrilateral.vertice[i], quadrilateral.vertice[i + 1], quadrilateral.vertice[i + 2]);
     if (d == -orientation)
-      return false;
+      return -1;
   }
 
   return orientation != 0;
