@@ -1,3 +1,6 @@
+#include "new_types.h"
+#include <stdio.h>
+
 Quadrilateral read_coordinates(){
   Quadrilateral quadrilateral = NULL;
   int number = 0;
