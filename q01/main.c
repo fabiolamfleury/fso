@@ -1,6 +1,6 @@
 #include <stdio.h>
-#include "io_functions.h"
 #include "new_types.h"
+#include "io_functions.h"
 #include "io_functions.c"
 
 int main(int argc, char const *argv[]) {

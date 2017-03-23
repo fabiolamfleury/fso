@@ -1,12 +1,13 @@
-#include "new_types.h"
+
+#include "quadrilateral_calcs.h"
 #include <stdio.h>
 
 Quadrilateral read_coordinates(){
-  Quadrilateral quadrilateral = NULL;
+  Quadrilateral quadrilateral;
   int number = 0;
   while(number < 4){
-    scanf("%d",&quadrilateral.vertice[number].x);
-    scanf("%d",&quadrilateral.vertice[number].y);
+    scanf("%lf",&quadrilateral.vertice[number].x);
+    scanf("%lf",&quadrilateral.vertice[number].y);
     number++;
   }
   return quadrilateral;
@@ -14,11 +15,11 @@ Quadrilateral read_coordinates(){
 
 void out_is_convex(Quadrilateral quadrilateral){
   int result;
-  result = is_convex(Quadrilateral quadrilateral);
+  result = is_convex(quadrilateral);
   if(result == 0){
-    printf("É convexo");
+    printf("Quadrilatero convexo");
   }
   else{
-    printf("Não é convexo");
+    printf("Quadrilatero nao convexo");
   }
 }
