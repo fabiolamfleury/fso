@@ -1,7 +1,6 @@
-#include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
-#include "quadrilateral_calcs.h"
+#include "new_types.h"
 
 double length(Cordinate cordinate_1, Cordinate cordinate_2){
   double result = 0;
@@ -33,7 +32,6 @@ int is_convex(Quadrilateral quadrilateral){
 
   for (i = 0; i < 4; ++i) {
     int d = line_orientation(quadrilateral.vertice[i], quadrilateral.vertice[i + 1], quadrilateral.vertice[i + 2]);
-    printf("\n D[%d]: %d\n",i, d);
     if (d == -orientation)
       return -1;
   }

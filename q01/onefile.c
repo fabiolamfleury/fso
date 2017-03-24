@@ -29,16 +29,23 @@ Quadrilateral read_coordinates(){
   return quadrilateral;
 }
 
+void print_area(Quadrilateral quadrilateral){
+  printf("Area: %.lf.\n",area(quadrilateral));
+}
+
 void out_is_convex(Quadrilateral quadrilateral){
   int result;
   result = is_convex(quadrilateral);
   if(result == 0){
-    printf("Quadrilatero convexo");
+    printf("Quadrilatero convexo.\n");
+    print_area(quadrilateral);
   }
   else{
-    printf("Quadrilatero nao convexo");
+    printf("Quadrilatero nao convexo.\n");
   }
 }
+
+
 
 double length(Cordinate cordinate_1, Cordinate cordinate_2){
   double result = 0;
