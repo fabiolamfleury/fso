@@ -50,16 +50,16 @@ int main(){
     struct timeval initial_time;
     gettimeofday(&initial_time,NULL);
     while(1) {
-      close (sleepy_process_pipe[0]); // close read
 
-      FILE* stream;
-      stream = fdopen (sleepy_process_pipe[1], "w");
+
       int randNum = (rand() % 3);
       sleep(randNum);
       gettimeofday(&elapsed_time, NULL);
       long int *times = print_time_stamp(initial_time, elapsed_time, times);
 
-
+      close (sleepy_process_pipe[0]); // close read
+      FILE* stream;
+      stream = fdopen (sleepy_process_pipe[1], "w");
       writer("filho dorminhoco", times, i, stream);
       close (sleepy_process_pipe[1]);
       i++;
@@ -68,12 +68,16 @@ int main(){
   }
   /* Parent process */
   else {
+    int count = 0;
     close (sleepy_process_pipe[1]); // close write
     FILE* stream;
     stream = fdopen (sleepy_process_pipe[0], "r");
+    while(count < 5){
     reader (stream);
 
-    close(sleepy_process_pipe[0]);
+    count++;
+  }
+  close(sleepy_process_pipe[0]);
   }
 
   return 0;

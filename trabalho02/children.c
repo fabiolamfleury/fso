@@ -8,12 +8,11 @@
 #include "output.h"
 #include "pipe.h"
 
-void sleepy_child(int *fds){
+void sleepy_child(int *pipe){
   int i = 1;
-  long int seconds;
-  long int miliseconds;
   struct timeval elapsed_time;
   struct timeval initial_time;
+  srand(time(NULL));
 
   gettimeofday(&initial_time,NULL);
 
@@ -21,9 +20,9 @@ void sleepy_child(int *fds){
     int randNum = (rand() % 3);
     sleep(randNum);
     gettimeofday(&elapsed_time, NULL);
-    long int *times = print_time_stamp(initial_time, elapsed_time, times);
-    writing_pipe(fds, times, i, "filho dorminhoco");
-    i++;
+    long int *times;
+    times = print_time_stamp(initial_time, elapsed_time, times);
+    writing_pipe(pipe, times, i, "filho dorminhoco");
   }
 
 }

@@ -18,27 +18,29 @@ long int* print_time_stamp(struct timeval initial_time, struct timeval end_time,
 
 void writing_file(int pipe[], struct timeval initial_time){
 
-  struct timeval tv;
-  fd_set rfds;
-  FD_ZERO(&rfds);
-  FD_SET(pipe[0], &rfds);
-  tv.tv_sec = 0;
-  tv.tv_usec = 5;
+  // struct timeval tv;
+  // fd_set rfds;
+  // FD_ZERO(&rfds);
+  // FD_SET(pipe[0], &rfds);
+  // tv.tv_sec = 0;
+  // tv.tv_usec = 5;
+  //
+  // int retval = select(FD_SETSIZE, &rfds, NULL, NULL, &tv);
 
-  int retval = select(FD_SETSIZE, &rfds, NULL, NULL, &tv);
-
-  if(retval > 0){
+  // if(retval > 0){
+    close (pipe[1]);
     FILE* stream;
     stream = fdopen (pipe[0], "r");
-    close (pipe[0]);
+    reader (stream);
+    close(pipe[0]);
+    // struct timeval end_time;
+    // gettimeofday(&end_time, NULL);
+    // long int *times;
+    // times = print_time_stamp(initial_time, end_time, times);
 
-    struct timeval end_time;
-    gettimeofday(&end_time, NULL);
-    long int *times;
-    times = print_time_stamp(initial_time, end_time, times);
 
-    FILE *output = fopen("output.txt", "a");
-    reader (stream, output, times);
-    fclose(output);
   }
-}
+//   else{
+//     /* do nothing */
+//   }
+// }

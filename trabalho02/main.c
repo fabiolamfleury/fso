@@ -11,45 +11,51 @@
 #include "output.h"
 #include "children.h"
 
-void wait_time(pid_t parent);
+void wait_time(pid_t parent, pid_t sleepy);
 
-void wait_time(pid_t parent) {
-    pid_t child = fork();
+void wait_time(pid_t parent, pid_t sleepy) {
+    pid_t child;
 
-    if (child != 0) {
-        return;
-    } else {
-        prctl(PR_SET_PDEATHSIG, SIGHUP);
-        sleep(20);
-        kill(parent, SIGKILL);
+    child = fork();
+    if (child != (pid_t) 0) {
+      /* parent process exit from function */
+      sleep(10);
+      kill(sleepy, SIGKILL);
+      kill(parent, SIGKILL);
+      raise(SIGKILL);
     }
+    else {
+      /* child proces to wait execution and then kill processes*/
+
+      return;
+    }
+    return;
 }
 
-int spawn ()
-{
+int spawn () {
   pid_t child_pid;
-  int fds[2];
-  pipe (fds);
-  /* Duplicate this process. */
-  child_pid = fork ();
+  int sleepy_pipe[2];
+  pipe (sleepy_pipe);
+
+  child_pid = fork();
+
+  /* parent process */
   if (child_pid != 0){
-    wait_time(getpid());
-    reading_messages(fds);
+    /* process to wait execution */
+
+    wait_time(getpid(), child_pid);
+    printf("acorda carai");
+    reading_messages(sleepy_pipe);
+
   }
   else {
-    prctl(PR_SET_PDEATHSIG, SIGHUP);
-    sleepy_child(fds);
-    /* The execvp function returns only if an error occurs. */
-    fprintf (stderr, "an error occurred in execvp\n");
-    abort ();
+    /* sleepy child */
+    sleepy_child(sleepy_pipe);
   }
 }
 
 int main(int argc, char const *argv[]) {
-  srand(time(NULL));
-  int i;
-  i = spawn();
-  printf("PROCESSO PAI: %d", i);
 
+  spawn();
   return 0;
 }
