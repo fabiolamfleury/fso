@@ -15,7 +15,7 @@ void wait_time(pid_t parent, pid_t sleepy, pid_t active) {
     child = fork();
     if (child != (pid_t) 0) {
       /* parent process exit from function */
-      sleep(30);
+      sleep(5);
       kill(sleepy, SIGKILL);
       kill(active, SIGKILL);
       kill(parent, SIGKILL);

@@ -1,4 +1,4 @@
-0:00.509: 0:00.053: Mensagem 1 do do dorminhoco
+0:00.277: 0:00.060: Mensagem 1 do do dorminhoco
 
-0:01.883: 0:01.985: Mensagem 1 do usuario: <xa>
+0:02.138: 0:01.916: Mensagem 1 do usuario: <xa>
 
