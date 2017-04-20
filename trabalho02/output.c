@@ -15,12 +15,12 @@ long int* print_time_stamp(struct timeval initial_time, struct timeval end_time,
   - (initial_time.tv_usec + 1000 * initial_time.tv_sec);
 
   times[0] = end_time.tv_sec - initial_time.tv_sec;
-  times[1] = elapsed_time % 1000;
+  times[1] = (unsigned) elapsed_time % 1000;
   return times;
 }
 
 
-void writing_file(int pipe[], struct timeval initial_time){
+void writing_file(int pipe[], struct timeval initial_time, struct timeval finish_time){
 
   struct timeval tv;
   fd_set rfds;
@@ -35,11 +35,12 @@ void writing_file(int pipe[], struct timeval initial_time){
 
     struct timeval end_time;
     gettimeofday(&end_time, NULL);
-    long int *times;
+    long int * times, * parent_time;
     times = print_time_stamp(initial_time, end_time, times);
+    parent_time = print_time_stamp(initial_time, finish_time, parent_time);
     FILE* stream;
     stream = fdopen (pipe[0], "r");
-    reader (stream, times);
+    reader (stream, parent_time, initial_time);
     close(pipe[0]);
 
   }

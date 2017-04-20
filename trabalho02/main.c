@@ -9,6 +9,25 @@
 #include "output.h"
 #include "children.h"
 
+void wait_time(pid_t parent, pid_t sleepy, pid_t active) {
+    pid_t child;
+
+    child = fork();
+    if (child != (pid_t) 0) {
+      /* parent process exit from function */
+      sleep(30);
+      kill(sleepy, SIGKILL);
+      kill(active, SIGKILL);
+      kill(parent, SIGKILL);
+      raise(SIGKILL);
+    }
+    else {
+      /* child proces to wait execution and then kill processes*/
+      return;
+    }
+    return;
+}
+
 int spawn () {
   pid_t sleepy_pid;
   pid_t active_pid;
@@ -23,9 +42,8 @@ int spawn () {
   if (sleepy_pid != 0){
     active_pid = fork();
     if(active_pid != 0){
+      wait_time(getpid(), sleepy_pid, active_pid);
       reading_messages(sleepy_pipe, active_pipe);
-      kill(sleepy_pid, SIGTERM);
-      kill(active_pid, SIGTERM);
     }
     else{
       active_child(active_pipe);

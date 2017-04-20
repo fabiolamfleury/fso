@@ -17,13 +17,19 @@ void sleepy_child(int *pipe){
 
   gettimeofday(&initial_time,NULL);
 
+  close (pipe[0]);
+  FILE* stream;
+  stream = fdopen (pipe[1], "w");
+
   while(1){
     gettimeofday(&elapsed_time, NULL);
     times = print_time_stamp(initial_time, elapsed_time, times);
-    writing_pipe(pipe, times, i, "filho dorminhoco");
+    writer("do dorminhoco", times, i, stream);
     i++;
     sleep((rand() % 3));
   }
+
+  close(pipe[1]);
 
 }
 
@@ -33,6 +39,10 @@ void active_child(int *pipe){
   struct timeval elapsed_time;
   struct timeval initial_time;
   gettimeofday(&initial_time,NULL);
+
+  close(pipe[0]);
+  FILE* stream;
+  stream = fdopen (pipe[1], "w");
 
   while(1){
     char message[180];
@@ -45,7 +55,9 @@ void active_child(int *pipe){
     char user[201] = "usuario: <";
     strcat(user, message);
     strcat(user, ">");
-    writing_pipe(pipe, times, i, user);
+    writer(user, times, i, stream);
     i++;
   }
+
+  close(pipe[1]);
 }
