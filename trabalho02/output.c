@@ -12,35 +12,33 @@
 long int* print_time_stamp(struct timeval initial_time, struct timeval end_time, long int *times){
   times = malloc(sizeof(int)*2);
   times[0] = end_time.tv_sec - initial_time.tv_sec;
-  times[1] = (end_time.tv_usec - initial_time.tv_usec) - (times[0] * 60);
+  times[1] = (end_time.tv_usec - initial_time.tv_usec) / 1000;
   return times;
 }
 
+
 void writing_file(int pipe[], struct timeval initial_time){
 
-  // struct timeval tv;
-  // fd_set rfds;
-  // FD_ZERO(&rfds);
-  // FD_SET(pipe[0], &rfds);
-  // tv.tv_sec = 0;
-  // tv.tv_usec = 5;
-  //
-  // int retval = select(FD_SETSIZE, &rfds, NULL, NULL, &tv);
+  struct timeval tv;
+  fd_set rfds;
+  FD_ZERO(&rfds);
+  FD_SET(pipe[0], &rfds);
+  tv.tv_sec = 0;
+  tv.tv_usec = 0;
 
-  // if(retval > 0){
-    close (pipe[1]);
+  int retval = select(FD_SETSIZE, &rfds, NULL, NULL, &tv);
+
+  if(retval > 0){
+
+    struct timeval end_time;
+    gettimeofday(&end_time, NULL);
+    long int *times;
+    times = print_time_stamp(initial_time, end_time, times);
     FILE* stream;
     stream = fdopen (pipe[0], "r");
-    reader (stream);
+    reader (stream, times);
     close(pipe[0]);
-    // struct timeval end_time;
-    // gettimeofday(&end_time, NULL);
-    // long int *times;
-    // times = print_time_stamp(initial_time, end_time, times);
-
 
   }
-//   else{
-//     /* do nothing */
-//   }
-// }
+
+}
