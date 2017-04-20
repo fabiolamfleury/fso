@@ -11,8 +11,11 @@
 
 long int* print_time_stamp(struct timeval initial_time, struct timeval end_time, long int *times){
   times = malloc(sizeof(int)*2);
+  long int elapsed_time = (end_time.tv_usec + 1000 * end_time.tv_sec)
+  - (initial_time.tv_usec + 1000 * initial_time.tv_sec);
+
   times[0] = end_time.tv_sec - initial_time.tv_sec;
-  times[1] = (end_time.tv_usec - initial_time.tv_usec) / 1000;
+  times[1] = elapsed_time % 1000;
   return times;
 }
 

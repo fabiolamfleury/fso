@@ -40,7 +40,7 @@ void reading_messages(int sleepy_pipe[], int active_pipe[]){
   close (sleepy_pipe[1]);
   close (active_pipe[1]);
 
-  while(running_time < 10){
+  while(running_time < 30){
     writing_file(active_pipe, initial_time);
     writing_file(sleepy_pipe, initial_time);
     gettimeofday(&end_time, NULL);
