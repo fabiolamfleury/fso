@@ -1,4 +1,4 @@
-CFLAGS=-pthread -g
+CFLAGS=-pthread
 
 threads: main.o
 	gcc $(CFLAGS) -o threads main.o
