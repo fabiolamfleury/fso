@@ -12,15 +12,15 @@
 
 typedef struct node {
   int number;
-  struct node * next;
-  struct node * previous;
+  struct node *next;
+  struct node *previous;
 }Node;
 
 typedef struct buffer {
   int capacity;
   int quantity;
-  Node * head;
-  Node * tail;
+  Node *head;
+  Node *tail;
 }Buffer;
 
 /* handling ctrl c signal*/
@@ -30,14 +30,22 @@ void sigHandler(int dummy) {
   TRUE = 0;
 }
 
-
 /*linked list representing buffer*/
-Buffer * buffer;
+Buffer *buffer;
 
 /*mutex protecting buffer*/
 pthread_mutex_t buffer_queue_mutex = PTHREAD_MUTEX_INITIALIZER;
 
-void node_insertion (Node * node) {
+
+void initializing_buffer () {
+  buffer = malloc(sizeof(Buffer));
+  buffer->capacity = CAPACITY;
+  buffer->quantity = 0;
+  buffer->head = NULL;
+  buffer->tail = NULL;
+}
+
+void node_insertion (Node *node) {
   if (buffer->head == NULL) {
       buffer->head = node;
       buffer->tail = node;
@@ -51,7 +59,7 @@ void node_insertion (Node * node) {
 }
 
 void node_deletion () {
-  Node * node;
+  Node *node;
   node = buffer->tail;
   if (buffer->tail == buffer->head) {
     buffer->tail = NULL;
@@ -65,8 +73,9 @@ void node_deletion () {
   free (node);
 }
 
-void* produce_random (void * arg) {
-  char * file_name = (char *) arg;
+void* produce_random (void *arg) {
+  char *file_name = (char*) arg;
+  int max_buffer = 0;
   /*producing random numbers*/
   while (TRUE) {
     pthread_mutex_lock (&buffer_queue_mutex);
@@ -79,6 +88,14 @@ void* produce_random (void * arg) {
       node->previous = NULL;
       node_insertion (node);
 
+      /*storing max capacity number achieved in buffer*/
+      if (max_buffer < buffer->quantity) {
+        max_buffer = buffer->quantity;
+      }
+      else {
+        /*do nothing*/
+      }
+
       /*writing insertion on log*/
       FILE* output = fopen(file_name, "a");
       fprintf(output, "[producao]: Numero gerado: %d\n", node->number);
@@ -90,12 +107,43 @@ void* produce_random (void * arg) {
     pthread_mutex_unlock (&buffer_queue_mutex);
     sleep (0.1);
   }
-  return NULL;
+
+  return (void*) max_buffer;
 }
 
-void* consume_number (void* parameter)
-{
-  char * file_name = (char *) parameter;
+void* consume_number_a (void* parameter) {
+  char *file_name = (char*) parameter;
+  int *numbers = malloc(sizeof(int)*2);
+
+  numbers[0] = 999999999;
+  numbers[1] = 0;
+  while (TRUE) {
+    pthread_mutex_lock (&buffer_queue_mutex);
+    if (buffer->quantity > 0) {
+      if ((buffer->tail)->number < numbers[0]) {
+        numbers[0] = (buffer->tail)->number;
+      }
+      else if ((buffer->tail)->number > numbers[1]) {
+        numbers[1] = (buffer->tail)->number;
+      }
+
+      /*writing reading on log*/
+      FILE *output = fopen(file_name, "a");
+      fprintf(output, "[consumo a]: Numero lido: %d\n", (buffer->tail)->number);
+      fclose(output);
+      node_deletion ();
+    }
+    else {
+      /*do nothing*/
+    }
+    pthread_mutex_unlock (&buffer_queue_mutex);
+    sleep (0.15);
+  }
+  return (void*) numbers;
+}
+
+void* consume_number_b (void* parameter) {
+  char *file_name = (char*) parameter;
   int *numbers = malloc(sizeof(int)*2);
 
   numbers[0] = 999999999;
@@ -112,7 +160,7 @@ void* consume_number (void* parameter)
 
       /*writing reading on log*/
       FILE* output = fopen(file_name, "a");
-      fprintf(output, "[consumo a]: Numero lido: %d\n", (buffer->tail)->number);
+      fprintf(output, "[consumo b]: Numero lido: %d\n", (buffer->tail)->number);
       fclose(output);
       node_deletion ();
     }
@@ -125,38 +173,70 @@ void* consume_number (void* parameter)
   return (void*) numbers;
 }
 
-void initializing_buffer () {
-  buffer = malloc(sizeof(Buffer));
-  buffer->capacity = CAPACITY;
-  buffer->quantity = 0;
-  buffer->head = NULL;
-  buffer->tail = NULL;
+int* comparing_numbers(int *array_a, int *array_b){
+
+  int *result = malloc (sizeof(int)*2);
+
+  /*picking smallest*/
+  if(array_a[0] < array_b[0]){
+    result[0] = array_a[0];
+  }
+  else{
+    result[0] = array_b[0];
+  }
+
+  /*picking highest*/
+  if(array_a[1] > array_b[1]){
+    result[1] = array_a[1];
+  }
+  else{
+    result[1] = array_b[1];
+  }
+
+  return result;
 }
+
 
 int main(int argc, char const *argv[]) {
   /*initializing buffer*/
   initializing_buffer ();
   srand(time(NULL));
   signal(SIGINT, sigHandler);
-
+  char *string = malloc(sizeof(char)*100);
   if(argc == 2){
-    char *string;
     strcpy (string, argv[1]);
+
     /*creating producer thread */
     pthread_t producer_id;
     pthread_create(&producer_id, NULL, &produce_random, string);
 
+    /*creating consumers threads */
     pthread_t consumer1_id;
-    pthread_create(&consumer1_id, NULL, &consume_number, string);
-  //  pthread_t consumer2_id;
+    pthread_create(&consumer1_id, NULL, &consume_number_a, string);
+    pthread_t consumer2_id;
+    pthread_create(&consumer2_id, NULL, &consume_number_b, string);
+
     while (TRUE) {
       /*do nothing*/
     }
+
+    /*finishing program*/
     printf("\n[aviso]: Termino solicitado. Aguardando threads...");
     int *numbers_consumer1;
-    pthread_join(producer_id, NULL);
+    int *numbers_consumer2;
+    int max_buffer;
+    /*waiting for others threads to finish*/
+    pthread_join(producer_id, (void*) &max_buffer);
     pthread_join (consumer1_id, (void*) &numbers_consumer1);
-    printf("\nNumbers: menor: %d maior: %d", numbers_consumer1[0],numbers_consumer1[1]);
+    pthread_join (consumer2_id, (void*) &numbers_consumer2);
+
+    /*comparing smallest and highest numbers from both consumers*/
+    int *result = malloc (sizeof(int)*2);
+    result = comparing_numbers (numbers_consumer1, numbers_consumer2);
+
+    printf("\n[aviso]: Maior numero gerado: %d",result[1]);
+    printf("\n[aviso]: Menor numero gerado: %d", result[0]);
+    printf("\n[aviso]: Maior ocupacao de buffer: %d", max_buffer);
     printf("\n[aviso]: Aplicacao encerrada.");
     printf("\n");
   }
