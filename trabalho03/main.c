@@ -239,6 +239,12 @@ int main(int argc, char const *argv[]) {
     printf("\n[aviso]: Maior ocupacao de buffer: %d", max_buffer);
     printf("\n[aviso]: Aplicacao encerrada.");
     printf("\n");
+    FILE* output = fopen(string, "a");
+    fprintf(output, "\n[aviso]: Maior numero gerado: %d",result[1]);
+    fprintf(output, "\n[aviso]: Menor numero gerado: %d", result[0]);
+    fprintf(output, "\n[aviso]: Maior ocupacao de buffer: %d", max_buffer);
+    fprintf(output, "\n[aviso]: Aplicacao encerrada.");
+    fclose(output);
   }
   else{
     printf("O nome do arquivo deve ser passado como parametro \n");
