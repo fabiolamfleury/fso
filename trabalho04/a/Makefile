@@ -1,5 +1,5 @@
 exe: libseno.a main.o
-	gcc $(CFLAGS) -o exe main.o libseno.a -lm
+	gcc $(CFLAGS) -o exe main.o libseno.a
 
 libseno.a: libseno.c
 	gcc $(CFLAGS) -c libseno.c
