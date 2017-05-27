@@ -38,8 +38,9 @@ int spawn () {
   pipe (active_pipe);
   sleepy_pid = fork();
 
-  /* parent process */
+  
   if (sleepy_pid != 0){
+    /* parent process */
     active_pid = fork();
     if(active_pid != 0){
       wait_time(getpid(), sleepy_pid, active_pid);
