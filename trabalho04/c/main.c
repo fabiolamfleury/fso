@@ -3,7 +3,7 @@
 #include <dlfcn.h>
 
 int main(int argc, char const *argv[]) {
-  void* handle = dlopen("libseno.so",RTLD_LAZY);
+  void* handle = dlopen("./libseno.so",RTLD_LAZY);
   if(!handle)
   {
     fprintf(stderr, "%s\n", dlerror());
@@ -22,7 +22,7 @@ int main(int argc, char const *argv[]) {
           fprintf(stderr,"%s\n", error);
           exit(1);
         } else {
-          printf("\nseno(%s) = %lf\n", argv[2], (resposta*)(numero));
+          printf("\nseno(%s) = %lf\n", argv[2], (resposta)(numero));
           dlclose(handle);
         }
 
@@ -33,7 +33,7 @@ int main(int argc, char const *argv[]) {
           fprintf(stderr,"%s\n", error);
           exit(1);
         } else {
-          double resultado = (resposta2*)(numero);
+          double resultado = (resposta2)(numero);
           printf("\narcseno(%s) = %lf\n", argv[2],resultado);
           dlclose(handle);
         }
