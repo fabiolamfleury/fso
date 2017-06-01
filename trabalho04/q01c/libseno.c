@@ -9,11 +9,13 @@ double seno(double angulo){
 }
 
 double arc_seno(double seno){
-  double elemento1 = ((seno * seno * seno * seno) / 6);
-  double elemento2 = (seno * seno * seno * seno * seno / 10);
-  double elemento3 = (seno * seno * seno * seno * seno * seno * seno / 24);
-  double elemento4 = (seno * seno * seno * seno * seno * seno * seno * seno * seno) / 108;
-
-  double arcseno = elemento1 + elemento2 + elemento3 + elemento4;
-  return arcseno;
+    double ultimo = seno;
+    double soma = seno;
+    int i = 1;
+    for(i=1;i<=1000;i++)
+    {
+        ultimo*=((seno*seno)*(2*i-1)*(2*i-1))/((2*i)*(2*i+1));
+        soma+=ultimo;
+    }
+    return soma;
 }
