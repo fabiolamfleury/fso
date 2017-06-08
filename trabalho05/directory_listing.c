@@ -10,9 +10,7 @@ const char* get_file_type (const char* path)
 {
   struct stat st;
   lstat (path, &st);
-  if (S_ISLNK (st.st_mode))
-    return "symbolic link";
-  else if (S_ISDIR (st.st_mode))
+  if (S_ISDIR (st.st_mode))
     return "directory";
   else if (S_ISCHR (st.st_mode))
     return "character device";
